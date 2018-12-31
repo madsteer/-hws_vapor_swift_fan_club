@@ -1,0 +1,4 @@
+module CCryptoOpenSSL {
+    umbrella "/Users/cory/dev/git/vapor/hws_vapor_swift_fan_club/.build/checkouts/crypto.git-5244346483635626462/Sources/CCryptoOpenSSL/include"
+    export *
+}
