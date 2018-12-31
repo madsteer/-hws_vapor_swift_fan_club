@@ -1,0 +1,18 @@
+#set("title") { Home }
+
+#set("body") {
+<h1>Taylor Swift Fan Club</h1>
+#if(username) {
+<p>Welcome back, #(username)!</p>
+
+<ul>
+#for(forum in forums) {
+<li><a href="/forum/#(forum.id)">#(forum.name)</a></li>
+}
+</ul>
+} else {
+<a href="/users/login">Please log in.</a>
+}
+}
+
+#embed("master")

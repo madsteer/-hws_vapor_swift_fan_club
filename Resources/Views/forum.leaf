@@ -1,0 +1,20 @@
+#set("body") {
+<h1>#(forum.name)</h1>
+
+#if(messages) {
+<ul>
+#for(message in messages) {
+<li><a href="/forum/#(forum.id)/#(message.id)">#(message.title)</a> – posted by #(message.user) on #(message.date)</li>
+}
+</ul>
+}
+
+<form method="post">
+<h3>Add a new post</h3>
+<p><input name="title" type="text" class="form-control" placeholder="Enter a title" /></p>
+<p><textarea name="body" class="form-control" rows="5"></textarea></p>
+<p><button type="submit" class="btn btn-lg btn-primary">Post</button></p>
+</form>
+}
+
+#embed("master")
