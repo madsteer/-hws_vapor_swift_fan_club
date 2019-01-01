@@ -4,7 +4,7 @@
 #if(messages) {
 <ul>
 #for(message in messages) {
-<li><a href="/forum/#(forum.id)/#(message.id)">#(message.title)</a> – posted by #(message.user) on #(message.date)</li>
+<li><a href="/forum/#(forum.id)/#(message.id)">#(message.title)</a> – posted by #(message.user) on #date(message.date, "HH:mm EEEE, MMM d, yyyy")</li>
 }
 </ul>
 }

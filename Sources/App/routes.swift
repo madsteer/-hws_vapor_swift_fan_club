@@ -74,6 +74,47 @@ public func routes(_ router: Router) throws {
             }
         }
     }
+
+    router.get("forum", Int.parameter, Int.parameter) { req -> Future<View> in
+        // prepare a context struct we can pass to Leaf
+        struct MessageContext: Codable {
+            var username: String?
+            var forum: Forum
+            var message: Message
+            var replies: [Message]
+        }
+
+        // pull out the IDs for our forum and message
+        let forumID = try req.parameters.next(Int.self)
+        let messageID = try req.parameters.next(Int.self)
+
+        // look up the forum that was requested
+        return Forum.find(forumID, on: req).flatMap(to: View.self) { forum in
+            guard let forum = forum else {
+                // the forum doesn't exist - bail out!
+                throw Abort(.notFound)
+            }
+
+            // now look up the message that was requested
+            return Message.find(messageID, on: req).flatMap(to: View.self) { message in
+                guard let message = message else {
+                    // the message doesn't exist - bail out!
+                    throw Abort(.notFound)
+                }
+
+                // finally, find all replies to this message
+                let query = Message.query(on: req)
+                    .filter(\.parent == message.id!)
+                    .all()
+
+                // convert those replies – and all previous data – into our Leaf view
+                return query.flatMap(to: View.self) { replies in
+                    let context = MessageContext(username: getUsername(req), forum: forum, message: message, replies: replies)
+                    return try req.view().render("message", context)
+                }
+            }
+        }
+    }
 }
 
 func getUsername(_ req: Request) -> String? {
