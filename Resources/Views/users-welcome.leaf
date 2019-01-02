@@ -1,4 +1,5 @@
 #set("title") {Welcome!}
+#set("sleep-redirect") {on}
 
 #set("body") {
     <h1>Welcome!</h1>

@@ -164,9 +164,32 @@ public func routes(_ router: Router) throws {
             }
         }
     }
+
+    router.post("forum", Int.parameter, use: postOrReply)
+    router.post("forum", Int.parameter, Int.parameter, use: postOrReply)
 }
 
 func getUsername(_ req: Request) -> String? {
     let session = try? req.session()
     return session?["username"]
+}
+
+func postOrReply(req: Request) throws -> Future<Response> {
+    guard let username = getUsername(req) else {
+        throw Abort(.unauthorized)
+    }
+
+    let forumID = try req.parameters.next(Int.self)
+    let parentID = (try? req.parameters.next(Int.self)) ?? 0
+    let title: String = try req.content.syncGet(at: "title")
+    let body: String = try req.content.syncGet(at: "body")
+
+    let post = Message(id: nil, forum: forumID, title: title, body: body, parent: parentID, user: username, date: Date())
+    return post.save(on: req).map(to: Response.self) { post in
+        if parentID == 0 {
+            return req.redirect(to: "/forum/\(forumID)/\(post.id!)")
+        } else {
+            return req.redirect(to: "/forum/\(forumID)/\(parentID)")
+        }
+    }
 }
