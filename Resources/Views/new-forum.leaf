@@ -1,0 +1,9 @@
+#set("body") {
+<form method="post">
+    <h3>Add a new forum</h3>
+    <p><input name="name" type="text" class="form-control" placeholder="Enter a forum name" /></p>
+    <p><button type="submit" class="btn btn-lg btn-primary">Create</button></p>
+</form>
+}
+
+#embed("master")

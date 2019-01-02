@@ -13,9 +13,9 @@ public func routes(_ router: Router) throws {
 //    router.get("setup") { req -> String in
 //
 //        var forums = [Forum]()
-//        forums.append(Forum(id: 1, name: "Taylor's Songs"))
-//        forums.append(Forum(id: 2, name: "Taylor's Albums"))
-//        forums.append(Forum(id: 3, name: "Taylor's Concerts"))
+//        forums.append(Forum(id: 1, name: "Taylor's Songs", user: "twostraws"))
+//        forums.append(Forum(id: 2, name: "Taylor's Albums", user: "twostraws"))
+//        forums.append(Forum(id: 3, name: "Taylor's Concerts", user: "twostraws"))
 //
 //        for forum in forums {
 //            _ = forum.create(on: req)
@@ -93,6 +93,10 @@ public func routes(_ router: Router) throws {
         }
     }
 
+    router.get("forum") { req -> Future<View> in
+        return try req.view().render("new-forum")
+    }
+
     router.get("forum", Int.parameter) { req -> Future<View> in
         struct ForumContext: Codable {
             var username: String?
@@ -165,6 +169,23 @@ public func routes(_ router: Router) throws {
         }
     }
 
+    router.post("forum") { req -> Future<Response> in
+        guard let username = getUsername(req) else {
+            throw Abort(.unauthorized)
+        }
+
+        let title: String = try req.content.syncGet(at: "name")
+        let forum = Forum(id: nil, name: title, user: username)
+
+        return forum.save(on: req).map(to: Response.self) { forum in
+            guard let id = forum.id else {
+                throw Abort(.badRequest)
+            }
+
+            return req.redirect(to: "/forum/\(id)")
+        }
+    }
+    
     router.post("forum", Int.parameter, use: postOrReply)
     router.post("forum", Int.parameter, Int.parameter, use: postOrReply)
 }
