@@ -2,6 +2,7 @@ import Routing
 import Vapor
 import Fluent
 import FluentSQLite
+import Crypto
 
 /// Register your application's routes here.
 ///
@@ -32,6 +33,33 @@ public func routes(_ router: Router) throws {
 //        return "OK"
 //    }
 
+    router.group("users") { group in
+        group.get("create") { req -> Future<View> in
+            return try req.view().render("users-create")
+        }
+
+        group.post("create") { req -> Future<View> in
+            var user = try req.content.syncDecode(User.self)
+
+            return User.query(on: req)
+                .filter(\.username == user.username)
+                .first().flatMap(to: View.self) { existing in
+                    if existing == nil {
+                        user.password = try BCrypt.hash(user.password)
+
+                        return user.save(on: req).flatMap(to: View.self) { user in
+                            return try req.view().render("users-welcome")
+                        }
+                    } else {
+                        print("duplicate user: \(user.username)")
+                        let context = ["error": "true", "euser": user.username]
+                        print("context: '\(context)'")
+                        return try req.view().render("users-create", context)
+                    }
+            }
+        }
+    }
+    
     router.get { req -> Future<View> in
         struct HomeContext: Codable {
             var username: String?

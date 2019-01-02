@@ -23,6 +23,7 @@
 /* Begin PBXBuildFile section */
 		8BDB11CA21D9D6CF003D3FD5 /* Forum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BDB11C921D9D6CF003D3FD5 /* Forum.swift */; };
 		8BDB11CC21D9D979003D3FD5 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BDB11CB21D9D979003D3FD5 /* Message.swift */; };
+		8BDB11CE21DC343B003D3FD5 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BDB11CD21DC343B003D3FD5 /* User.swift */; };
 		OBJ_1074 /* AppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_16 /* AppTests.swift */; };
 		OBJ_1076 /* App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "hws_vapor_swift_fan_club::App::Product" /* App.framework */; };
 		OBJ_1077 /* Leaf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "Leaf::Leaf::Product" /* Leaf.framework */; };
@@ -5239,6 +5240,7 @@
 /* Begin PBXFileReference section */
 		8BDB11C921D9D6CF003D3FD5 /* Forum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Forum.swift; sourceTree = "<group>"; };
 		8BDB11CB21D9D979003D3FD5 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		8BDB11CD21DC343B003D3FD5 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		"Console::Command::Product" /* Command.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Command.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"Console::Console::Product" /* Console.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Console.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"Console::Logging::Product" /* Logging.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Logging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -6883,6 +6885,7 @@
 				OBJ_13 /* routes.swift */,
 				8BDB11C921D9D6CF003D3FD5 /* Forum.swift */,
 				8BDB11CB21D9D979003D3FD5 /* Message.swift */,
+				8BDB11CD21DC343B003D3FD5 /* User.swift */,
 			);
 			name = App;
 			path = Sources/App;
@@ -12083,6 +12086,7 @@
 			files = (
 				OBJ_933 /* boot.swift in Sources */,
 				OBJ_934 /* configure.swift in Sources */,
+				8BDB11CE21DC343B003D3FD5 /* User.swift in Sources */,
 				8BDB11CC21D9D979003D3FD5 /* Message.swift in Sources */,
 				OBJ_935 /* routes.swift in Sources */,
 				8BDB11CA21D9D6CF003D3FD5 /* Forum.swift in Sources */,
