@@ -58,6 +58,26 @@ public func routes(_ router: Router) throws {
                     }
             }
         }
+
+        group.get("login") { req -> Future<View> in
+            return try req.view().render("users-login")
+        }
+
+        group.post(User.self, at: "login") { req, user -> Future<View> in
+            return User.query(on: req)
+                .filter(\.username == user.username)
+                .first().flatMap(to: View.self) { existing in
+                    if let existing = existing {
+                        if try BCrypt.verify(user.password, created: existing.password) {
+                            // login was successful
+                            return try req.view().render("users-welcome")
+                        }
+                    }
+
+                    let context = ["error": "true", "euser": user.username]
+                    return try req.view().render("users-login", context)
+            }
+        }
     }
     
     router.get { req -> Future<View> in
