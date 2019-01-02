@@ -35,4 +35,9 @@ public func configure(
 
     try services.register(LeafProvider())
     config.prefer(LeafRenderer.self, for: ViewRenderer.self)
+
+    var middlewareConfig = MiddlewareConfig.default()
+    middlewareConfig.use(SessionsMiddleware.self)
+    services.register(middlewareConfig)
+    config.prefer(MemoryKeyedCache.self, for: KeyedCache.self)
 }

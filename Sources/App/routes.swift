@@ -69,7 +69,8 @@ public func routes(_ router: Router) throws {
                 .first().flatMap(to: View.self) { existing in
                     if let existing = existing {
                         if try BCrypt.verify(user.password, created: existing.password) {
-                            // login was successful
+                            let session = try req.session()
+                            session["username"] = existing.username
                             return try req.view().render("users-welcome")
                         }
                     }
@@ -166,5 +167,6 @@ public func routes(_ router: Router) throws {
 }
 
 func getUsername(_ req: Request) -> String? {
-    return "Testing"
+    let session = try? req.session()
+    return session?["username"]
 }
