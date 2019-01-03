@@ -2,13 +2,13 @@
 
 #set("body") {
     <h1>#(message.title)</h1>
-    <h2>Posted by #(message.user) on #date(message.date, "HH:mm EEEE, MMM d, yyyy")</h2>
+    <h2>Posted by #capitalize(message.user) on #date(message.date, "HH:mm EEEE, MMM d, yyyy")</h2>
 
     #(message.body)
 
     #if(replies) {
         #for(reply in replies) {
-            <h4>Reply from #(reply.user) on #date(reply.date, "HH:mm EEEE, MMM d, yyyy")</h4>
+            <h4>Reply from #capitalize(reply.user) on #date(reply.date, "HH:mm EEEE, MMM d, yyyy")</h4>
             <p>#(reply.body)</p>
         }
     }

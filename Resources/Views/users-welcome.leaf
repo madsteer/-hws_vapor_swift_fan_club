@@ -1,8 +1,16 @@
 #set("title") {Welcome!}
-#set("sleep-redirect") {on}
+#// set("sleep-redirect") {on}
 
 #set("body") {
-    <h1>Welcome!</h1>
+    <h1>Welcome #capitalize(username)!</h1>
+    #if(messages) {
+        <p/>
+        <ul>
+        #for(message in messages) {
+            <li><a href="/forum/#(forum.id)">#(forum.name)</a></li>
+        }
+        </ul>
+    }
 }
 
 #embed("master")

@@ -33,6 +33,28 @@ public func routes(_ router: Router) throws {
 //        return "OK"
 //    }
 
+    router.get("api", String.parameter) { req -> Future<[Message]> in
+        let user = try req.parameters.next(String.self)
+
+        return User.query(on: req).filter(\.username == user).first().flatMap(to: Array.self) { existing in
+            guard let existing = existing,
+                existing.username == user else {
+                    throw Abort(.notFound)
+            }
+
+            return Message.query(on: req).filter(\.user == user).filter(\.title != "Reply").all().flatMap(to: Array.self) { userMessages in
+
+                let ids = userMessages.map{ $0.id ?? 0 }
+
+                return Message.query(on: req).filter(\.title == "Reply")
+                    .filter(\.user != user)
+                    .filter(\.parent ~~ ids)
+                    .all()
+
+            }
+        }
+    }
+
     router.group("users") { group in
         group.get("create") { req -> Future<View> in
             return try req.view().render("users-create")
@@ -48,7 +70,10 @@ public func routes(_ router: Router) throws {
                         user.password = try BCrypt.hash(user.password)
 
                         return user.save(on: req).flatMap(to: View.self) { user in
-                            return try req.view().render("users-welcome")
+                            let session = try req.session()
+                            session["username"] = user.username
+                            let context = ["username": user.username]
+                            return try req.view().render("users-welcome", context)
                         }
                     } else {
                         print("duplicate user: \(user.username)")
@@ -71,7 +96,8 @@ public func routes(_ router: Router) throws {
                         if try BCrypt.verify(user.password, created: existing.password) {
                             let session = try req.session()
                             session["username"] = existing.username
-                            return try req.view().render("users-welcome")
+                            let context = ["username": user.username]
+                            return try req.view().render("users-welcome", context)
                         }
                     }
 
