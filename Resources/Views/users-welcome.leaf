@@ -3,11 +3,12 @@
 
 #set("body") {
     <h1>Welcome #capitalize(username)!</h1>
-    #if(messages) {
+    #if(hasMessages) {
         <p/>
+        <h2>Replies to your Messages</h2>
         <ul>
         #for(message in messages) {
-            <li><a href="/forum/#(forum.id)">#(forum.name)</a></li>
+            <li><a href="/forum/#(message.forum)/#(message.parent)">Reply from #(message.user)</a></li>
         }
         </ul>
     }

@@ -33,28 +33,6 @@ public func routes(_ router: Router) throws {
 //        return "OK"
 //    }
 
-    router.get("api", String.parameter) { req -> Future<[Message]> in
-        let user = try req.parameters.next(String.self)
-
-        return User.query(on: req).filter(\.username == user).first().flatMap(to: Array.self) { existing in
-            guard let existing = existing,
-                existing.username == user else {
-                    throw Abort(.notFound)
-            }
-
-            return Message.query(on: req).filter(\.user == user).filter(\.title != "Reply").all().flatMap(to: Array.self) { userMessages in
-
-                let ids = userMessages.map{ $0.id ?? 0 }
-
-                return Message.query(on: req).filter(\.title == "Reply")
-                    .filter(\.user != user)
-                    .filter(\.parent ~~ ids)
-                    .all()
-
-            }
-        }
-    }
-
     router.group("users") { group in
         group.get("create") { req -> Future<View> in
             return try req.view().render("users-create")
@@ -89,6 +67,12 @@ public func routes(_ router: Router) throws {
         }
 
         group.post(User.self, at: "login") { req, user -> Future<View> in
+            struct LoginContext: Codable {
+                var username: String
+                var hasMessages: Bool
+                var messages: [Message]
+            }
+
             return User.query(on: req)
                 .filter(\.username == user.username)
                 .first().flatMap(to: View.self) { existing in
@@ -96,8 +80,27 @@ public func routes(_ router: Router) throws {
                         if try BCrypt.verify(user.password, created: existing.password) {
                             let session = try req.session()
                             session["username"] = existing.username
-                            let context = ["username": user.username]
-                            return try req.view().render("users-welcome", context)
+
+                            return User.query(on: req).filter(\.username == existing.username).first().flatMap(to: View.self) { existing in
+                                guard let existing = existing,
+                                    existing.username == user.username else {
+                                        throw Abort(.notFound)
+                                }
+
+                                return Message.query(on: req).filter(\.user == existing.username).filter(\.title != "Reply").all().flatMap(to: View.self) { userMessages in
+
+                                    let ids = userMessages.map{ $0.id ?? 0 }
+
+                                    return Message.query(on: req).filter(\.title == "Reply")
+                                        .filter(\.user != existing.username)
+                                        .filter(\.parent ~~ ids)
+                                        .all().flatMap(to: View.self) { messages in
+                                            let context = LoginContext(username: existing.username, hasMessages: !messages.isEmpty, messages: messages)
+                                            return try req.view().render("users-welcome", context)
+                                    }
+
+                                }
+                            }
                         }
                     }
 
